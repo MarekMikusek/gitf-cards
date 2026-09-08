@@ -9,6 +9,7 @@ services:
     restart: unless-stopped
     tty: true
     working_dir: /var/www
+    user: "${WWWUSER:-1000}:${WWWGROUP:-1000}"
     volumes:
       - .:/var/www
     networks:
