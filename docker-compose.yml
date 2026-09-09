@@ -2,8 +2,8 @@ services:
   # 1. Aplikacja PHP / Laravel
   card-app:
     build:
-      context: .
-      dockerfile: docker/php/Dockerfile
+      context: ./backend
+      dockerfile: ../docker/php/Dockerfile
     image: card-vue-app
     container_name: card_app
     restart: unless-stopped
@@ -11,7 +11,7 @@ services:
     working_dir: /var/www
     user: "${WWWUSER:-1000}:${WWWGROUP:-1000}"
     volumes:
-      - .:/var/www
+      - ./backend:/var/www
     networks:
       - card-app-network
 
@@ -23,14 +23,32 @@ services:
     ports:
       - "8900:80"
     volumes:
-      - .:/var/www
+      - ./backend:/var/www
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - card-app-network
     depends_on:
       - card-app
 
-  # 3. Baza danych MySQL
+  # 3. Aplikacja Frontend (Vue 3)
+  card_frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend/Dockerfile
+    container_name: card_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8900/api
+    networks:
+      - card-app-network
+    depends_on:
+      - card-app
+
+  # 4. Baza danych MySQL
   card-db:
     image: mysql:8.0
     container_name: card_db
@@ -47,7 +65,7 @@ services:
     networks:
       - card-app-network
 
-  # 4. Panel zarządzania bazą (Adminer)
+  # 5. Panel zarządzania bazą (Adminer)
   card-db-admin:
     image: adminer:latest
     container_name: card_db_admin
@@ -60,7 +78,7 @@ services:
       - card-db
 
 networks:
- card-app-network:
+  card-app-network:
     driver: bridge
 
 volumes:
