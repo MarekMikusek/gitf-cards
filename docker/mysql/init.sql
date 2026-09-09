@@ -1,0 +1,7 @@
+CREATE DATABASE IF NOT EXISTS cards;
+CREATE DATABASE IF NOT EXISTS cards_test;
+
+GRANT ALL PRIVILEGES ON cards.* TO 'laravel'@'%';
+GRANT ALL PRIVILEGES ON cards_test.* TO 'laravel'@'%';
+
+FLUSH PRIVILEGES;

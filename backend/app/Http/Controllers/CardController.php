@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCardRequest;
+use App\Http\Requests\UpdateCardRequest;
 use App\Http\Resources\CardResource;
 use App\Models\Card;
 use Illuminate\Http\JsonResponse;
@@ -33,13 +34,13 @@ public function store(StoreCardRequest $request): JsonResponse
         return new CardResource($card);
     }
 
-    public function update(StoreCardRequest $request, Card $card):CardResource
+    public function update(UpdateCardRequest $request, Card $card):CardResource
     {
         $card->update($request->validated());
         return new CardResource($card);
     }
 
-    public function delete(Card $card): JsonResponse
+    public function destroy(Card $card): JsonResponse
     {
         $card->delete();
 
