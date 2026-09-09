@@ -14,7 +14,7 @@ const form = ref({
   pin: '',
   activation_date: '',
   expiration_date: '',
-  balance: 0,
+  balance: '0.00',
 });
 
 const errors = ref({});
@@ -24,14 +24,18 @@ watch(
   () => props.cardToEdit,
   (newVal) => {
     if (newVal) {
-      form.value = { ...newVal };
+      form.value = { 
+        ...newVal,
+        activation_date: newVal.activation_date ? String(newVal.activation_date).replace(' ', 'T').slice(0, 16) : '',
+        balance: parseFloat(newVal.balance || 0).toFixed(2)
+      };
     } else {
       form.value = {
         card_number: '',
         pin: '',
         activation_date: new Date().toISOString().slice(0, 16),
         expiration_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-        balance: 100,
+        balance: (100).toFixed(2),
       };
     }
     errors.value = {};
@@ -121,6 +125,7 @@ const saveCard = async () => {
           <label class="block text-sm font-medium text-gray-700">Saldo (PLN)</label>
           <input
             v-model="form.balance"
+            @blur="form.balance = parseFloat(form.balance || 0).toFixed(2)"
             type="number"
             step="0.01"
             min="0"
